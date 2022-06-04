@@ -1,1 +1,1 @@
-web: bin/golang-todo-with-samehada
+web: bin/backend

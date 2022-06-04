@@ -29,8 +29,8 @@ func SetupRoutes() *gin.Engine {
 
 	// Set routes for API
 	// Update to POST, UPDATE, DELETE etc
-	router.Static("/todo", "./build")
-	router.Static("/static", "./build/static")
+	router.Static("/todo", "./dist")
+	router.Static("/static", "./dist/static")
 	router.GET("/items", api.TodoItems)
 	router.GET("/item/create/:item", api.CreateTodoItem)
 	router.GET("/item/update/:id/:done", api.UpdateTodoItem)

@@ -1,17 +1,9 @@
-# TODO-Fullstack-App-Go-Gin-Postgres-React
+# TODO-Fullstack-App-Go-Gin-Postgres-React (forked for demo of SamehadaDB)
 ![Test Coverage](backend/api/coverage_badge.png)
 
 This fullstack application creates a TODO List Web Page using the Go/Gin/Postgres/React Stack.
 
 ![Screen Shot](App.png)
-
-## Starting the application
-
-In the project root, run: 
-```
-docker-compose build 
-docker-compose up
-```
 
 ## Go server
 
@@ -26,6 +18,8 @@ Gin is used to define the TODO API with functionality such as:
 3. Updating a TODO item with its completed condition.
 4. Deleting a TODO item from the database.
 5. Later being able to filter TODO items.
+
+And serve static files of frontend.
 
 ## Postgres Database
 

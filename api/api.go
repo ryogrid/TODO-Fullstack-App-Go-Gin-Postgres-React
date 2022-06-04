@@ -25,10 +25,9 @@ func SetupPostgres() {
 	// db, err = sql.Open("postgres", "postgres://postgres:password@postgres/todo?sslmode=disable")
 
 	// when running locally
-	dbhost := os.Getenv("DBHOST")
-	dbpass := os.Getenv("DBPASS")
+	dburi := os.Getenv("DBURI")
 	//db, err = sql.Open("postgres", "postgres://postgres:password@localhost/todo?sslmode=disable")
-	db, err = sql.Open("postgres", fmt.Sprintf("postgres://postgres:%s@%s/todo?sslmode=disable", dbpass, dbhost))
+	db, err = sql.Open("postgres", dburi)
 
 	if err != nil {
 		fmt.Println(err.Error())

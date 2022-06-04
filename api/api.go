@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -24,7 +25,10 @@ func SetupPostgres() {
 	// db, err = sql.Open("postgres", "postgres://postgres:password@postgres/todo?sslmode=disable")
 
 	// when running locally
-	db, err = sql.Open("postgres", "postgres://postgres:password@localhost/todo?sslmode=disable")
+	dbhost := os.Getenv("DBHOST")
+	dbpass := os.Getenv("DBPASS")
+	//db, err = sql.Open("postgres", "postgres://postgres:password@localhost/todo?sslmode=disable")
+	db, err = sql.Open("postgres", fmt.Sprintf("postgres://postgres:%s@%s/todo?sslmode=disable", dbpass, dbhost))
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -50,7 +54,7 @@ func TodoItems(c *gin.Context) {
 
 	// Get all rows and add into items
 	items := make([]ListItem, 0)
-	
+
 	if rows != nil {
 		defer rows.Close()
 		for rows.Next() {

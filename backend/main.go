@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	api "github.com/ryogrid/TODO-Fullstack-App-Go-Gin-Postgres-React/api"
+	api "github.com/ryogrid/TODO-Fullstack-App-Go-Gin-Postgres-React/backend/main/backend/api"
 
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"

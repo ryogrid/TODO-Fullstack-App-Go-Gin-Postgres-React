@@ -1,4 +1,4 @@
-module github.com/ryogrid/TODO-Fullstack-App-Go-Gin-Postgres-React/main
+module github.com/ryogrid/TODO-Fullstack-App-Go-Gin-Postgres-React/backend/main
 
 go 1.15
 

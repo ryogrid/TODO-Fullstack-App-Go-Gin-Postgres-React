@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	api "github.com/ryogrid/TODO-Fullstack-App-Go-Gin-Postgres-React/backend/main/backend/api"
 
@@ -45,5 +46,6 @@ func main() {
 	api.SetupPostgres()
 	router := SetupRoutes()
 	//router.Run(":8080")
-	http.ListenAndServe(":8080", router)
+	port := os.Getenv("PORT")
+	http.ListenAndServe(":"+port, router)
 }

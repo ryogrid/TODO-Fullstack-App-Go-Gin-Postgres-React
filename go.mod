@@ -1,4 +1,4 @@
-module github.com/el10savio/TODO-Fullstack-App-Go-Gin-Postgres-React/backend
+module github.com/ryogrid/TODO-Fullstack-App-Go-Gin-Postgres-React/main
 
 go 1.15
 
@@ -9,4 +9,4 @@ require (
 	github.com/stretchr/testify v1.6.1
 )
 
-replace github.com/el10savio/TODO-Fullstack-App-Go-Gin-Postgres-React/backend/api => ../api
+//replace github.com/ryogrid/TODO-Fullstack-App-Go-Gin-Postgres-React/api => ./api

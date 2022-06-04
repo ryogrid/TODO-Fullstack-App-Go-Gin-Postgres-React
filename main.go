@@ -29,6 +29,8 @@ func SetupRoutes() *gin.Engine {
 
 	// Set routes for API
 	// Update to POST, UPDATE, DELETE etc
+	router.Static("/todo", "./build")
+	router.Static("/static", "./build/static")
 	router.GET("/items", api.TodoItems)
 	router.GET("/item/create/:item", api.CreateTodoItem)
 	router.GET("/item/update/:id/:done", api.UpdateTodoItem)
@@ -42,5 +44,6 @@ func SetupRoutes() *gin.Engine {
 func main() {
 	api.SetupPostgres()
 	router := SetupRoutes()
-	router.Run(":8081")
+	//router.Run(":8080")
+	http.ListenAndServe(":8080", router)
 }

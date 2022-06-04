@@ -10,7 +10,7 @@ class Todolist extends React.Component {
   }
 
   removeItem(id) {
-    fetch(`http://localhost:8081/item/delete/${id}`).then(
+    fetch(`http://localhost:8080/item/delete/${id}`).then(
       this.setState({
         items: this.state.items.filter(item => item.id !== id),
       })
@@ -22,7 +22,7 @@ class Todolist extends React.Component {
     let item = items.find(item => item.id === id);
     item.done = !item.done;
 
-    fetch(`http://localhost:8081/item/update/${id}/${item.done}`).then(
+    fetch(`http://localhost:8080/item/update/${id}/${item.done}`).then(
       this.setState({ items })
     );
   }
@@ -52,7 +52,7 @@ class Todolist extends React.Component {
   }
 
   componentDidMount() {
-    fetch("http://localhost:8081/items")
+    fetch("http://localhost:8080/items")
       .then(res => res.json())
       .then(json => this.setState({ items: json.items }));
   }

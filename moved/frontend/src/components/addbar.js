@@ -4,7 +4,7 @@ import "./styles/Addbar.css";
 class AddBar extends React.Component {
   addItem = event => {
     if (event.key === "Enter") {
-      fetch(`http://localhost:8080/item/create/${event.target.value}`).then(
+      fetch(`https://golang-todo-with-samehada.herokuapp.com/item/create/${event.target.value}`).then(
         alert("Bug: Reload The Page To View Changes")
       );
     }

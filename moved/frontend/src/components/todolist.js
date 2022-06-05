@@ -14,7 +14,7 @@ class Todolist extends React.Component {
     if(window.location.hostname == "localhost"){
       this.bkend_url_base = "http://localhost:8080";
     }else{
-      this.bkend_host_port = "https://" + window.location.hostname;
+      this.bkend_url_base = "https://" + window.location.hostname;
     }
   }
 

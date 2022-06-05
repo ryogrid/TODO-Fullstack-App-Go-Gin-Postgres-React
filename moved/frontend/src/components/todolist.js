@@ -2,16 +2,26 @@ import React from "react";
 import "./styles/Todolist.css";
 
 class Todolist extends React.Component {
+  bkend_url_base = null
+
   constructor(props) {
     super(props);
     this.state = {
       items: [],
-      randToReload: props.val
+      //randToReload: props.val
     };
+
+    if(window.location.hostname == "localhost"){
+      this.bkend_url_base = "http://localhost:8080";
+    }else{
+      this.bkend_host_port = "https://" + window.location.hostname;
+    }
   }
 
+  
+
   removeItem(id) {
-    fetch(`https://golang-todo-with-samehada.herokuapp.com/item/delete/${id}`).then(
+    fetch(this.bkend_url_base + `/item/delete/${id}`).then(
       this.setState({
         items: this.state.items.filter(item => item.id !== id),
       })
@@ -23,7 +33,7 @@ class Todolist extends React.Component {
     let item = items.find(item => item.id === id);
     item.done = !item.done;
 
-    fetch(`https://golang-todo-with-samehada.herokuapp.com/item/update/${id}/${item.done}`).then(
+    fetch(this.bkend_url_base + `/item/update/${id}/${item.done}`).then(
       this.setState({ items })
     );
   }
@@ -53,7 +63,7 @@ class Todolist extends React.Component {
   }
 
   componentDidMount() {
-    fetch("https://golang-todo-with-samehada.herokuapp.com/items")
+    fetch(this.bkend_url_base + "/items")
       .then(res => res.json())
       .then(json => this.setState({ items: json.items }));
   }

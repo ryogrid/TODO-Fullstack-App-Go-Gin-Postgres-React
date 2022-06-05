@@ -6,6 +6,7 @@ class Todolist extends React.Component {
     super(props);
     this.state = {
       items: [],
+      randToReload: props.val
     };
   }
 

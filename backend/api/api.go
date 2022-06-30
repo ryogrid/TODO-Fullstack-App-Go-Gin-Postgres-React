@@ -1,43 +1,54 @@
 package api
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
+	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"github.com/ryogrid/SamehadaDB/samehada"
 )
 
 type ListItem struct {
-	Id   string `json:"id"`
+	Id   int32  `json:"id"`
 	Item string `json:"item"`
-	Done bool   `json:"done"`
+	//Done bool   `json:"done"`
+	Done int32 `json:"done"`
 }
 
-var db *sql.DB
+//var db *sql.DB
+var db *samehada.SamehadaDB
+var dbLock sync.Mutex
 var err error
 
+var nextId int32 = 0
+
 func SetupPostgres() {
-	// db, err = sql.Open("postgres", "postgres://postgres:password@postgres/todo?sslmode=disable")
+	//// db, err = sql.Open("postgres", "postgres://postgres:password@postgres/todo?sslmode=disable")
+	//
+	//// when running locally
+	//dburl := os.Getenv("DATABASE_URL")
+	////db, err = sql.Open("postgres", "postgres://postgres:password@localhost/todo?sslmode=disable")
+	//db, err = sql.Open("postgres", dburl)
+	//
+	//if err != nil {
+	//	fmt.Println(err.Error())
+	//}
+	//
+	//if err = db.Ping(); err != nil {
+	//	fmt.Println(err.Error())
+	//}
+	//
+	//log.Println("connected to postgres")
 
-	// when running locally
-	dburl := os.Getenv("DATABASE_URL")
-	//db, err = sql.Open("postgres", "postgres://postgres:password@localhost/todo?sslmode=disable")
-	db, err = sql.Open("postgres", dburl)
-
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-
-	if err = db.Ping(); err != nil {
-		fmt.Println(err.Error())
-	}
-
-	log.Println("connected to postgres")
+	db = samehada.NewSamehadaDB("/tmp/demo", 10*1024) // buffer pool capacity max is 10MB
+	dbLock.Lock()
+	db.ExecuteSQL("CREATE table list (id int, item char(256), done int);")
+	dbLock.Unlock()
 }
 
 // CRUD: Create Read Update Delete API Format
@@ -45,7 +56,10 @@ func SetupPostgres() {
 // List all todo items
 func TodoItems(c *gin.Context) {
 	// Use SELECT Query to obtain all rows
-	rows, err := db.Query("SELECT * FROM list")
+	//rows, err := db.Query("SELECT * FROM list")
+	dbLock.Lock()
+	err, rows := db.ExecuteSQL("SELECT * FROM list")
+	dbLock.Unlock()
 	if err != nil {
 		fmt.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error with DB"})
@@ -54,16 +68,20 @@ func TodoItems(c *gin.Context) {
 	// Get all rows and add into items
 	items := make([]ListItem, 0)
 
-	if rows != nil {
-		defer rows.Close()
-		for rows.Next() {
+	if len(rows) != 0 {
+		//defer rows.Close()
+		//for rows.Next() {
+		for _, row := range rows {
 			// Individual row processing
 			item := ListItem{}
-			if err := rows.Scan(&item.Id, &item.Item, &item.Done); err != nil {
-				fmt.Println(err.Error())
-				c.JSON(http.StatusInternalServerError, gin.H{"message": "error with DB"})
-			}
-			item.Item = strings.TrimSpace(item.Item)
+			//if err := rows.Scan(&item.Id, &item.Item, &item.Done); err != nil {
+			//	fmt.Println(err.Error())
+			//	c.JSON(http.StatusInternalServerError, gin.H{"message": "error with DB"})
+			//}
+			//item.Item = strings.TrimSpace(item.Item)
+			item.Id = row[0].(int32)
+			item.Item = strings.TrimSpace(row[1].(string))
+			item.Done = row[2].(int32)
 			items = append(items, item)
 		}
 	}
@@ -85,11 +103,16 @@ func CreateTodoItem(c *gin.Context) {
 		// Create todo item
 		var TodoItem ListItem
 
+		dbLock.Lock()
+		TodoItem.Id = nextId
+		nextId++
 		TodoItem.Item = item
-		TodoItem.Done = false
+		//TodoItem.Done = false
+		TodoItem.Done = 0
 
 		// Insert item to DB
-		_, err := db.Query("INSERT INTO list(item, done) VALUES($1, $2);", TodoItem.Item, TodoItem.Done)
+		err, _ := db.ExecuteSQL(fmt.Sprintf("INSERT INTO list(id, item, done) VALUES(%d, '%s', %d);", TodoItem.Id, TodoItem.Item, TodoItem.Done))
+		dbLock.Unlock()
 		if err != nil {
 			fmt.Println(err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error with DB"})
@@ -108,26 +131,53 @@ func CreateTodoItem(c *gin.Context) {
 
 // Update todo item
 func UpdateTodoItem(c *gin.Context) {
-	id := c.Param("id")
-	done := c.Param("done")
+	idParam := c.Param("id")
+	doneParam := c.Param("done")
+
+	fmt.Printf("doneParam: %s\n", doneParam)
 
 	// Validate id and done
-	if len(id) == 0 {
+	if len(idParam) == 0 {
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "please enter an id"})
-	} else if len(done) == 0 {
+		return
+	} else if len(doneParam) == 0 {
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "please enter a done state"})
+		return
 	} else {
+		var done int32
+		if doneParam == "true" {
+			done = 1
+		} else if doneParam == "false" {
+			done = 0
+		} else {
+			c.JSON(http.StatusNotAcceptable, gin.H{"message": "please enter a done state"})
+			return
+		}
+
+		id, err := strconv.Atoi(idParam)
+		if err != nil {
+			c.JSON(http.StatusNotAcceptable, gin.H{"message": "please enter an id"})
+			return
+		}
+
 		// Find and update the todo item
-		var exists bool
-		err := db.QueryRow("SELECT * FROM list WHERE id=$1;", id).Scan(&exists)
-		if err != nil && err == sql.ErrNoRows {
+		//var exists bool
+		dbLock.Lock()
+		//err := db.QueryRow("SELECT * FROM list WHERE id=$1;", id).Scan(&exists)
+		err, rows := db.ExecuteSQL(fmt.Sprintf("SELECT * FROM list WHERE id=%d;", id))
+		dbLock.Unlock()
+		if err != nil || len(rows) == 0 {
 			fmt.Println(err.Error())
 			c.JSON(http.StatusNotFound, gin.H{"message": "not found"})
 		} else {
-			_, err := db.Query("UPDATE list SET done=$1 WHERE id=$2;", done, id)
+			//_, err := db.Query("UPDATE list SET done=$1 WHERE id=$2;", done, id)
+			dbLock.Lock()
+			err, _ := db.ExecuteSQL(fmt.Sprintf("UPDATE list SET done=%d WHERE id=%d;", done, id))
+			dbLock.Unlock()
 			if err != nil {
 				fmt.Println(err.Error())
 				c.JSON(http.StatusInternalServerError, gin.H{"message": "error with DB"})
+				return
 			}
 
 			// Log message
@@ -143,20 +193,33 @@ func UpdateTodoItem(c *gin.Context) {
 
 // Delete todo item
 func DeleteTodoItem(c *gin.Context) {
-	id := c.Param("id")
+	idParam := c.Param("id")
 
 	// Validate id
-	if len(id) == 0 {
+	if len(idParam) == 0 {
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "please enter an id"})
 	} else {
 		// Find and delete the todo item
-		var exists bool
-		err := db.QueryRow("SELECT * FROM list WHERE id=$1;", id).Scan(&exists)
-		if err != nil && err == sql.ErrNoRows {
+		//var exists bool
+		//err := db.QueryRow("SELECT * FROM list WHERE id=$1;", id).Scan(&exists)
+
+		id, err := strconv.Atoi(idParam)
+		if err != nil {
+			c.JSON(http.StatusNotAcceptable, gin.H{"message": "please enter an id"})
+			return
+		}
+
+		dbLock.Lock()
+		err, rows := db.ExecuteSQL(fmt.Sprintf("SELECT * FROM list WHERE id=%d;", id))
+		dbLock.Unlock()
+		if err != nil && len(rows) == 0 {
 			fmt.Println(err.Error())
 			c.JSON(http.StatusNotFound, gin.H{"message": "not found"})
 		} else {
-			_, err = db.Query("DELETE FROM list WHERE id=$1;", id)
+			//_, err = db.Query("DELETE FROM list WHERE id=$1;", id)
+			dbLock.Lock()
+			err, rows = db.ExecuteSQL(fmt.Sprintf("DELETE FROM list WHERE id=%d;", id))
+			dbLock.Unlock()
 			if err != nil {
 				fmt.Println(err.Error())
 				c.JSON(http.StatusInternalServerError, gin.H{"message": "error with DB"})

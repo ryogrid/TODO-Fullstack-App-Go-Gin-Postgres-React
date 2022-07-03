@@ -2,8 +2,9 @@ package main
 
 import (
 	"net/http"
+	"os"
 
-	api "github.com/el10savio/TODO-Fullstack-App-Go-Gin-Postgres-React/backend/api"
+	api "github.com/ryogrid/TODO-Fullstack-App-Go-Gin-Postgres-React/backend/main/backend/api"
 
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -29,8 +30,9 @@ func SetupRoutes() *gin.Engine {
 
 	// Set routes for API
 	// Update to POST, UPDATE, DELETE etc
-	router.Static("/todo", "./build")
-	router.Static("/static", "./build/static")
+	router.Static("/todo", "./moved/frontend/build")
+	router.Static("/static", "./moved/frontend/build/static")
+	router.Static("/manifest.json", "./moved/frontend/build/manifest.json")
 	router.GET("/items", api.TodoItems)
 	router.GET("/item/create/:item", api.CreateTodoItem)
 	router.GET("/item/update/:id/:done", api.UpdateTodoItem)
@@ -45,5 +47,6 @@ func main() {
 	api.SetupPostgres()
 	router := SetupRoutes()
 	//router.Run(":8080")
-	http.ListenAndServe(":8080", router)
+	port := os.Getenv("PORT")
+	http.ListenAndServe(":"+port, router)
 }

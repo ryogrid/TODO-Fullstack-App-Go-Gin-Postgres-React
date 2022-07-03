@@ -6,15 +6,26 @@ import TodoList from "./components/todolist";
 
 import "./App.css";
 
-class App extends React.Component {
+class App extends React.Component {  
+
   render() {
+    //const [val, setVal] = React.useState();
+
+    // return (
+    //   <div className="App">
+    //     <Header />
+    //     <AddBar emitVal={setVal} />
+    //     <TodoList val={val} />
+    //   </div>
+    // );
+
     return (
       <div className="App">
         <Header />
         <AddBar />
         <TodoList />
       </div>
-    );
+    );    
   }
 }
 

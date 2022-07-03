@@ -1,7 +1,7 @@
-# TODO-Fullstack-App-Go-Gin-Postgres-React (forked for demo of SamehadaDB)
+# TODO-Fullstack-App-Go-Gin-SamehadaDB-React (forked for demo of SamehadaDB)
 ![Test Coverage](backend/api/coverage_badge.png)
 
-This fullstack application creates a TODO List Web Page using the Go/Gin/Postgres/React Stack.
+This fullstack application creates a TODO List Web Page using the Go/Gin/SamehadaDB/React Stack.
 
 ![Screen Shot](App.png)
 

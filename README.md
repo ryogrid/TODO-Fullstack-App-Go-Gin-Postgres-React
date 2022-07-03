@@ -21,9 +21,9 @@ Gin is used to define the TODO API with functionality such as:
 
 And serve static files of frontend.
 
-## Postgres Database
+## Database of backend server
 
-Postgres is used to store the TODO items by saving rows in as id, item-text, and done boolean condition.
+[SamehadaDB](https://github.com/ryogrid/SamehadaDB) is used in embeded DB form to store the TODO items by saving rows in as id, item-text, and done condition.
 
 ## React
 

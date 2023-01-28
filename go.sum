@@ -403,6 +403,8 @@ github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/ryogrid/SamehadaDB v0.0.2 h1:WoYaecJmnnSES3G+1LunCbCcUjraxta5oC4pVZZzKG8=
 github.com/ryogrid/SamehadaDB v0.0.2/go.mod h1:17RIyZn3FBNOAoXFik6aFLZxGzV5gDpm6RT+1pAkXsc=
+github.com/ryogrid/SamehadaDB v0.0.3 h1:Lia4CjRwdUYVQjwIJ4Ph4Ts7WETT61IfdFIfhsUE5vU=
+github.com/ryogrid/SamehadaDB v0.0.3/go.mod h1:17RIyZn3FBNOAoXFik6aFLZxGzV5gDpm6RT+1pAkXsc=
 github.com/sasha-s/go-deadlock v0.2.0 h1:lMqc+fUb7RrFS3gQLtoQsJ7/6TV/pAIFvBsqX73DK8Y=
 github.com/sasha-s/go-deadlock v0.2.0/go.mod h1:StQn567HiB1fF2yJ44N9au7wOhrPS3iZqiDbRupzT10=
 github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=

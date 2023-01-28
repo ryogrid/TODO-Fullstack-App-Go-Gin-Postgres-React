@@ -45,7 +45,7 @@ func SetupPostgres() {
 	//
 	//log.Println("connected to postgres")
 
-	db = samehada.NewSamehadaDB("./demo", 10*1024) // buffer pool capacity max is 10MB
+	db = samehada.NewSamehadaDB("/home/webapp/demo", 10*1024) // buffer pool capacity max is 10MB
 	dbLock.Lock()
 	db.ExecuteSQL("CREATE table list (id int, item char(256), done int);")
 	dbLock.Unlock()

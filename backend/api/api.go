@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -28,24 +29,6 @@ var err error
 var nextId int32 = 0
 
 func SetupPostgres() {
-	//// db, err = sql.Open("postgres", "postgres://postgres:password@postgres/todo?sslmode=disable")
-	//
-	//// when running locally
-	//dburl := os.Getenv("DATABASE_URL")
-	////db, err = sql.Open("postgres", "postgres://postgres:password@localhost/todo?sslmode=disable")
-	//db, err = sql.Open("postgres", dburl)
-	//
-	//if err != nil {
-	//	fmt.Println(err.Error())
-	//}
-	//
-	//if err = db.Ping(); err != nil {
-	//	fmt.Println(err.Error())
-	//}
-	//
-	//log.Println("connected to postgres")
-
-	//db = samehada.NewSamehadaDB("/home/webapp/demo", 10*1024) // buffer pool capacity max is 10MB
 	db = samehada.NewSamehadaDB("./demo", 10*1024) // buffer pool capacity max is 10MB
 	dbLock.Lock()
 	db.ExecuteSQL("CREATE table list (id int, item char(256), done int);")
@@ -56,36 +39,38 @@ func SetupPostgres() {
 
 // List all todo items
 func TodoItems(c *gin.Context) {
-	// Use SELECT Query to obtain all rows
-	//rows, err := db.Query("SELECT * FROM list")
 	dbLock.Lock()
 	err, rows := db.ExecuteSQL("SELECT * FROM list")
-	dbLock.Unlock()
 	if err != nil {
 		fmt.Println(err.Error())
+		dbLock.Unlock()
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error with DB"})
+		return
 	}
 
 	// Get all rows and add into items
 	items := make([]ListItem, 0)
 
+	tmpMaxId := int32(-1)
 	if len(rows) != 0 {
-		//defer rows.Close()
-		//for rows.Next() {
 		for _, row := range rows {
 			// Individual row processing
 			item := ListItem{}
-			//if err := rows.Scan(&item.Id, &item.Item, &item.Done); err != nil {
-			//	fmt.Println(err.Error())
-			//	c.JSON(http.StatusInternalServerError, gin.H{"message": "error with DB"})
-			//}
-			//item.Item = strings.TrimSpace(item.Item)
 			item.Id = row[0].(int32)
+			if tmpMaxId < item.Id {
+				tmpMaxId = item.Id
+			}
 			item.Item = strings.TrimSpace(row[1].(string))
 			item.Done = row[2].(int32)
 			items = append(items, item)
 		}
+		nextId = tmpMaxId + 1
 	}
+	dbLock.Unlock()
+
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].Id < items[j].Id
+	})
 
 	// Return JSON object of all rows
 	c.Header("Access-Control-Allow-Origin", "*")
@@ -117,7 +102,7 @@ func CreateTodoItem(c *gin.Context) {
 		if err != nil {
 			fmt.Println(err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error with DB"})
-
+			return
 		}
 
 		// Log message
@@ -201,9 +186,6 @@ func DeleteTodoItem(c *gin.Context) {
 		c.JSON(http.StatusNotAcceptable, gin.H{"message": "please enter an id"})
 	} else {
 		// Find and delete the todo item
-		//var exists bool
-		//err := db.QueryRow("SELECT * FROM list WHERE id=$1;", id).Scan(&exists)
-
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
 			c.JSON(http.StatusNotAcceptable, gin.H{"message": "please enter an id"})

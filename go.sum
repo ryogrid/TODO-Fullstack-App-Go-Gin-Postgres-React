@@ -405,6 +405,12 @@ github.com/ryogrid/SamehadaDB v0.0.2 h1:WoYaecJmnnSES3G+1LunCbCcUjraxta5oC4pVZZz
 github.com/ryogrid/SamehadaDB v0.0.2/go.mod h1:17RIyZn3FBNOAoXFik6aFLZxGzV5gDpm6RT+1pAkXsc=
 github.com/ryogrid/SamehadaDB v0.0.3 h1:Lia4CjRwdUYVQjwIJ4Ph4Ts7WETT61IfdFIfhsUE5vU=
 github.com/ryogrid/SamehadaDB v0.0.3/go.mod h1:17RIyZn3FBNOAoXFik6aFLZxGzV5gDpm6RT+1pAkXsc=
+github.com/ryogrid/SamehadaDB v0.0.4 h1:O76xHJGpBiTRDg1nDVr29O45/OLe/u5GoLANh+dzGuo=
+github.com/ryogrid/SamehadaDB v0.0.4/go.mod h1:17RIyZn3FBNOAoXFik6aFLZxGzV5gDpm6RT+1pAkXsc=
+github.com/ryogrid/SamehadaDB v0.0.5 h1:7CJ1dXJlXaQhad98DofJjqWE2mQXrfoZ3g4xcxL3M6A=
+github.com/ryogrid/SamehadaDB v0.0.5/go.mod h1:17RIyZn3FBNOAoXFik6aFLZxGzV5gDpm6RT+1pAkXsc=
+github.com/ryogrid/SamehadaDB v0.0.6 h1:ury1ywaknxILCdkyUNUchbUWt7pD824cNNwN7f9YuQw=
+github.com/ryogrid/SamehadaDB v0.0.6/go.mod h1:17RIyZn3FBNOAoXFik6aFLZxGzV5gDpm6RT+1pAkXsc=
 github.com/sasha-s/go-deadlock v0.2.0 h1:lMqc+fUb7RrFS3gQLtoQsJ7/6TV/pAIFvBsqX73DK8Y=
 github.com/sasha-s/go-deadlock v0.2.0/go.mod h1:StQn567HiB1fF2yJ44N9au7wOhrPS3iZqiDbRupzT10=
 github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
